@@ -1,34 +1,41 @@
 class Solution {
 public:
-    bool validPath(int n, vector<vector<int>>& edges, int source, int destination) {
-        if(source == destination) {
-            return true;
+    int find(vector<int>& parent, int node) {
+        if (parent[node] != node) {
+            parent[node] = find(parent, parent[node]); 
         }
-        unordered_map<int, vector<int>> graph;
-        for(const auto& edge : edges) {
-            graph[edge[0]].push_back(edge[1]);
-            graph[edge[1]].push_back(edge[0]);
-        }
-        
-        queue<int> q;
-        vector<bool> visited(n, false);
-        q.push(source);
-        visited[source] = true;
-        
-        while(!q.empty()) {
-            int node = q.front();
-            q.pop();
-            
-            for(int neighbor : graph[node]) {
-                if(!visited[neighbor]) {
-                    if(neighbor == destination) {
-                        return true;
-                    }
-                    q.push(neighbor);
-                    visited[neighbor] = true;
-                }
+        return parent[node];
+    }
+
+    void unite(vector<int>& parent, vector<int>& rank, int u, int v) {
+        int rootU = find(parent, u);
+        int rootV = find(parent, v);
+
+        if (rootU != rootV) {
+            if (rank[rootU] > rank[rootV]) {
+                parent[rootV] = rootU;
+            } else if (rank[rootU] < rank[rootV]) {
+                parent[rootU] = rootV;
+            } else {
+                parent[rootV] = rootU;
+                rank[rootU]++;
             }
         }
-        return false;
+    }
+
+    bool validPath(int n, vector<vector<int>>& edges, int source, int destination) {
+        vector<int> parent(n), rank(n, 0);
+
+      
+        for (int i = 0; i < n; ++i) {
+            parent[i] = i;
+        }
+
+       
+        for (const auto& edge : edges) {
+            unite(parent, rank, edge[0], edge[1]);
+        }
+
+        return find(parent, source) == find(parent, destination);
     }
 };
