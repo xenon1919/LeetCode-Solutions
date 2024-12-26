@@ -13,15 +13,28 @@ class Solution {
 public:
     vector<int> postorderTraversal(TreeNode* root) {
         vector<int> result;
-        traverse(root, result);
-        return result;
-    }
-    void traverse(TreeNode* node, vector<int>& result) {
-        if(!node) {
-            return;
+        stack<TreeNode*> stack;
+        TreeNode* lastVisited = nullptr;
+
+        while(!stack.empty() || root) {
+            while(root) {
+                stack.push(root);
+                root = root->left;
+            }
+
+            TreeNode* node = stack.top();
+            if(node->right && node->right != lastVisited) {
+                root = node->right;
+            }
+
+            else {
+                result.push_back(node->val);
+                lastVisited = stack.top();
+                stack.pop();
+            }
         }
-        traverse(node->left, result);
-        traverse(node->right, result);
-        result.push_back(node->val);
+
+        return result;
+        
     }
 };
