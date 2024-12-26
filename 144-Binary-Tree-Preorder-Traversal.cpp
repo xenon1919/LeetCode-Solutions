@@ -12,19 +12,27 @@
 class Solution {
 public:
     vector<int> preorderTraversal(TreeNode* root) {
-
-        //Recursive Approach
+        //Iterative Approach
         vector<int> result;
-        traverse(root, result);
-        return result;
-    }
-
-    void traverse(TreeNode* node, vector<int>& result) {
-        if(!node) {
-            return;
+        stack<TreeNode*> stack;
+        if(root) {
+            stack.push(root);
         }
-        result.push_back(node->val);
-        traverse(node->left, result);
-        traverse(node->right, result);
+
+        while(!stack.empty()) {
+            TreeNode* node = stack.top();
+            stack.pop();
+            result.push_back(node->val);
+
+            if(node->right) {
+                stack.push(node->right);
+            }
+            if(node->left) {
+                stack.push(node->left);
+            }
+        }
+
+        return result;
+        
     }
 };
